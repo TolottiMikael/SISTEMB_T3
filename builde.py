@@ -49,8 +49,9 @@ while captura.isOpened():
     lm = resultados.pose_landmarks
     lmPose  = mp_pose.PoseLandmark
 
-    print("vendo os resultados")
-    print(lm)
+    trig_tricepsBanco = 0
+    pos_tricepsBanco = 0
+    
 
     if lm is not None:
         ombro_esq_x = int(lm.landmark[lmPose.LEFT_SHOULDER].x * w)
@@ -132,10 +133,21 @@ while captura.isOpened():
 
         if valorOMB_PUL_ESQ < 200:
             if (cotov_esq_y - ombro_esq_y) < 30:
-                cv2.putText(imagem, "Triceps Banco feito na esquerda", (10, 60), fonte, 0.9, green, 2)
+                trig_tricepsBanco = 1
+                print("triceps em cima")
         if valorOMB_PUL_DIR < 200:
             if (cotov_dir_y - ombro_dir_y) < 30:
                 cv2.putText(imagem, "Triceps Banco feito na direita", (10, 90), fonte, 0.9, green, 2)
+
+
+        if valorOMB_PUL_ESQ > 300:
+            if (cotov_esq_y - ombro_esq_y) > 50:
+                if(trig_tricepsBanco == 1):
+                    print("triceps embaixo")
+                    cv2.putText(imagem, "Triceps Banco feito na esquerda", (10, 60), fonte, 0.9, green, 2)
+                    trig_tricepsBanco = 0
+
+
         # Unir as duas marcações feitas (cv2.circle) com uma linha.
         cv2.line(imagem, (ombro_esq_x, ombro_esq_y), (ombro_dir_x, ombro_dir_y), yellow, 4)
 
