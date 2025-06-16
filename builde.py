@@ -2,6 +2,10 @@ import cv2
 import math
 import mediapipe as mp
 
+inicioMovimento = False
+fimMovimento = False
+repeticoes = 0
+
 # Função para cálculo da distância euclidiana entre dois pontos.
 def distancia_euclidiana(x1, y1, x2, y2):
     distancia = math.sqrt((x2-x1)**2+(y2-y1)**2)
@@ -130,12 +134,7 @@ while captura.isOpened():
         # Anotar na imagem o valor da distância entre os pontos dos ombros.
         cv2.putText(imagem, str(int(valor)), (10, 30), fonte, 0.9, green, 2)
 
-        if valorOMB_PUL_ESQ < 200:
-            if (cotov_esq_y - ombro_esq_y) < 30:
-                cv2.putText(imagem, "Triceps Banco feito na esquerda", (10, 60), fonte, 0.9, green, 2)
-        if valorOMB_PUL_DIR < 200:
-            if (cotov_dir_y - ombro_dir_y) < 30:
-                cv2.putText(imagem, "Triceps Banco feito na direita", (10, 90), fonte, 0.9, green, 2)
+
         # Unir as duas marcações feitas (cv2.circle) com uma linha.
         cv2.line(imagem, (ombro_esq_x, ombro_esq_y), (ombro_dir_x, ombro_dir_y), yellow, 4)
 
@@ -155,7 +154,21 @@ while captura.isOpened():
 
         cv2.line(imagem, (pulso_dir_x, pulso_dir_y), (cotov_dir_x, cotov_dir_y), yellow, 4)
         cv2.line(imagem, (pulso_esq_x, pulso_esq_y), (cotov_esq_x, cotov_esq_y), yellow, 4)
-        
+
+
+        #anota na imagem o angulo dessa linha:
+        anguloOmbroDirAoQuadrilDir = calculo_angulo(ombro_dir_x, ombro_dir_y, quadril_dir_x, quadril_dir_y)
+        if (inicioMovimento == False) and (anguloOmbroDirAoQuadrilDir < 90):
+            inicioMovimento = True
+            fimMovimento = False
+        if (inicioMovimento == True) and (anguloOmbroDirAoQuadrilDir > 110):
+            inicioMovimento = False
+            fimMovimento = True
+            repeticoes += 1
+
+
+        cv2.putText(imagem, str(anguloOmbroDirAoQuadrilDir), (10, 90), fonte, 0.9, green, 2)
+        cv2.putText(imagem, str(repeticoes), (10, 120), fonte, 0.9, green, 2)
 
 
     else:
