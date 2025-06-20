@@ -74,7 +74,25 @@ class posicaoCorpo:
                             (255, 0, 0), 3)
         
         camputerVision.circle(frame, (int(self.cabeca.x * width), int(self.cabeca.y * height)), 8, (0, 255, 0), -1)
-        
+    
+    def carregar_de_arquivo(nome_arquivo):
+        with open(nome_arquivo, 'r') as arquivo:
+            dados = json.load(arquivo)
+
+        from mediapipe.framework.formats import landmark_pb2
+        pose = posicaoCorpo.__new__(posicaoCorpo)  # Cria objeto sem chamar __init__
+
+        for nome, ponto in dados.items():
+            lm = landmark_pb2.NormalizedLandmark()
+            lm.x = ponto["x"]
+            lm.y = ponto["y"]
+            lm.z = ponto.get("z", 0)
+            lm.visibility = ponto.get("visibility", 0)
+            setattr(pose, nome, lm)
+
+        return pose
+
+    
     def salva_arquivo(self, nome_arquivo="dados.json"):
         dados = {}
 
@@ -87,12 +105,10 @@ class posicaoCorpo:
         with open(nome_arquivo, 'w') as arquivo:
             json.dump(dados, arquivo, indent=4)
 
-        print(f"Pose salva no arquivo {nome_arquivo}")
-
 class CameraApp(QWidget):
     def __init__(self):
         super().__init__()
-
+        self.PosesParaImprimir = []
         self.setWindowTitle("Detectação de Exercícios")
         self.setGeometry(100, 100, 900, 700)
 
@@ -113,7 +129,14 @@ class CameraApp(QWidget):
         self.botao_salvar_Pose = QPushButton("Salvar Pose")
         self.botao_salvar_Pose.clicked.connect(self.salvar_Pose)
         layout.addWidget(self.botao_salvar_Pose)
+        
+        
+        self.botao_carregar_Pose = QPushButton("carregar Pose")
+        self.botao_carregar_Pose.clicked.connect(self.carregar_Pose)
+        layout.addWidget(self.botao_carregar_Pose)
 
+        
+        
         self.setLayout(layout)
 
         # Configurações da câmera
@@ -136,13 +159,21 @@ class CameraApp(QWidget):
         self.label_video.setPixmap(QPixmap())
 
     def salvar_Pose(self):
-
         nome_arquivo, ok = QInputDialog.getText(self, "Salvar Pose", "Digite o nome do arquivo:")
         if ok and nome_arquivo:
             self.PoseFinal.salva_arquivo(f"{nome_arquivo}.json")
+            self.nome_arquivo = self.PoseFinal
+            self.PosesParaImprimir.append(self.nome_arquivo)
             print(f"Pose salva no arquivo {nome_arquivo}.json")
-            
-            
+    
+    def carregar_Pose(self):
+        nome_arquivo, ok = QInputDialog.getText(self, "Carregar Pose", "Digite o nome do arquivo:")
+        if ok and nome_arquivo:
+            pose_carregada = posicaoCorpo.carregar_de_arquivo(f"{nome_arquivo}.json")
+            self.PosesParaImprimir.append(pose_carregada)
+            print(f"Pose carregada do arquivo {nome_arquivo}.json")
+
+
     def update_frame(self):
         
         ret, frame = self.cap.read()
@@ -164,6 +195,10 @@ class CameraApp(QWidget):
             corpinho = posicaoCorpo(lm.landmark, lmPose)
             corpinho.imprime_Pose(cv2, frame, h, w)
             self.PoseFinal = corpinho
+            
+            for pose in self.PosesParaImprimir:
+                pose.imprime_Pose(cv2, frame, h, w)
+            
                 
                       
 
