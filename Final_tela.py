@@ -30,53 +30,53 @@ class posicaoCorpo:
         self.ponta_pe_dir = poseAtual[lmPose.RIGHT_FOOT_INDEX]
         self.cabeca =       poseAtual[lmPose.NOSE]
         
-    def imprime_Pose(self, camputerVision, frame, height, width):
+    def imprime_Pose(self, camputerVision, frame, height, width, color = (255,0,0)):
         # camputerVision.circle(frame, (x1, y1), 8, (0, 255, 0), -1)
         # camputerVision.line(frame, (x1, y1), (x2, y2), (0, 255, 0), -1)
         camputerVision.line(frame, (int(self.ombro_esq.x * width), int(self.ombro_esq.y * height)),
-                            (int(self.ombro_dir.x * width), int(self.ombro_dir.y * height)), (255, 0, 0), 3)
+                            (int(self.ombro_dir.x * width), int(self.ombro_dir.y * height)), color, 3)
         
         camputerVision.line(frame, (int(self.ombro_esq.x * width), int(self.ombro_esq.y * height)),
                             (int(self.quadril_esq.x * width), int(self.quadril_esq.y * height)),
-                            (255, 0, 0), 3)
+                            color, 3)
         camputerVision.line(frame, (int(self.ombro_dir.x * width), int(self.ombro_dir.y * height)),
                             (int(self.quadril_dir.x * width), int(self.quadril_dir.y * height)),
-                            (255, 0, 0), 3)
+                            color, 3)
         camputerVision.line(frame, (int(self.quadril_esq.x * width), int(self.quadril_esq.y * height)),
                             (int(self.joelho_esq.x * width), int(self.joelho_esq.y * height)),
-                            (255, 0, 0), 3)
+                            color, 3)
         camputerVision.line(frame, (int(self.quadril_dir.x * width), int(self.quadril_dir.y * height)),
                             (int(self.joelho_dir.x * width), int(self.joelho_dir.y * height)),
-                            (255, 0, 0), 3)
+                            color, 3)
         camputerVision.line(frame, (int(self.joelho_esq.x * width), int(self.joelho_esq.y * height)),
                             (int(self.tornoza_esq.x * width), int(self.tornoza_esq.y * height)),
-                            (255, 0, 0), 3)
+                            color, 3)
         camputerVision.line(frame, (int(self.joelho_dir.x * width), int(self.joelho_dir.y * height)),
                             (int(self.tornoza_dir.x * width), int(self.tornoza_dir.y * height)),
-                            (255, 0, 0), 3)
+                            color, 3)
         camputerVision.line(frame, (int(self.ombro_esq.x * width), int(self.ombro_esq.y * height)),
                             (int(self.cotovelo_esq.x * width), int(self.cotovelo_esq.y * height)),
-                            (255, 0, 0), 3)
+                            color, 3)
         camputerVision.line(frame, (int(self.ombro_dir.x * width), int(self.ombro_dir.y * height)),
                             (int(self.cotovelo_dir.x * width), int(self.cotovelo_dir.y * height)),
-                            (255, 0, 0), 3)
+                            color, 3)
         camputerVision.line(frame, (int(self.cotovelo_esq.x * width), int(self.cotovelo_esq.y * height)),
                             (int(self.pulso_esq.x * width), int(self.pulso_esq.y * height)),
-                            (255, 0, 0), 3)
+                            color, 3)
         camputerVision.line(frame, (int(self.cotovelo_dir.x * width), int(self.cotovelo_dir.y * height)),
                             (int(self.pulso_dir.x * width), int(self.pulso_dir.y * height)),
-                            (255, 0, 0), 3)
+                            color, 3)
         camputerVision.line(frame, (int(self.tornoza_esq.x * width), int(self.tornoza_esq.y * height)),
                             (int(self.ponta_pe_esq.x * width), int(self.ponta_pe_esq.y * height)),
-                            (255, 0, 0), 3)
+                            color, 3)
         camputerVision.line(frame, (int(self.tornoza_dir.x * width), int(self.tornoza_dir.y * height)),
                             (int(self.ponta_pe_dir.x * width), int(self.ponta_pe_dir.y * height)),
-                            (255, 0, 0), 3)
+                            color, 3)
         
         camputerVision.circle(frame, (int(self.cabeca.x * width), int(self.cabeca.y * height)), 8, (0, 255, 0), -1)
     
     def carregar_de_arquivo(nome_arquivo):
-        with open(nome_arquivo, 'r') as arquivo:
+        with open(f"poses/{nome_arquivo}", 'r') as arquivo:
             dados = json.load(arquivo)
 
         from mediapipe.framework.formats import landmark_pb2
@@ -98,11 +98,12 @@ class posicaoCorpo:
 
         for nome,ponto in self.__dict__.items():
             dados[nome] = {
-                "x": int(ponto.x),
-                "y": int(ponto.y),
+                "x": ponto.x,
+                "y": ponto.y,
+                "z": getattr(ponto, "z", 0),
+                "visibility": getattr(ponto, "visibility", 0)
             }
-
-        with open(nome_arquivo, 'w') as arquivo:
+        with open(f"poses/{nome_arquivo}", 'w') as arquivo:
             json.dump(dados, arquivo, indent=4)
 
 class CameraApp(QWidget):
@@ -135,7 +136,9 @@ class CameraApp(QWidget):
         self.botao_carregar_Pose.clicked.connect(self.carregar_Pose)
         layout.addWidget(self.botao_carregar_Pose)
 
-        
+        self.botao_limpaPoses = QPushButton("Apagar Poses Salvas")
+        self.botao_limpaPoses.clicked.connect(self.apagarPoses)
+        layout.addWidget(self.botao_limpaPoses)
         
         self.setLayout(layout)
 
@@ -173,6 +176,8 @@ class CameraApp(QWidget):
             self.PosesParaImprimir.append(pose_carregada)
             print(f"Pose carregada do arquivo {nome_arquivo}.json")
 
+    def apagarPoses(self):
+        self.PosesParaImprimir = []
 
     def update_frame(self):
         
@@ -197,11 +202,9 @@ class CameraApp(QWidget):
             self.PoseFinal = corpinho
             
             for pose in self.PosesParaImprimir:
-                pose.imprime_Pose(cv2, frame, h, w)
-            
+                pose.imprime_Pose(cv2, frame, h, w, color = (0, 0, 255))
                 
-                      
-
+            
         # Converter a imagem para exibir no QLabel
         img_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
         h, w, ch = img_rgb.shape
