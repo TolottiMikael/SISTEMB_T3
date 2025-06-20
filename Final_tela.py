@@ -12,6 +12,17 @@ from PyQt5.QtCore import QTimer
 def distancia_euclidiana(x1, y1, x2, y2):
     return math.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2)
 
+def ConferePoses(RefPose, PoseAtual, distancia):
+
+    for atributo in RefPose.__dict__:
+        d = distancia_euclidiana(RefPose.__dict__[atributo].x, RefPose.__dict__[atributo].y, 
+                                 PoseAtual.__dict__[atributo].x, PoseAtual.__dict__[atributo].y)
+        
+        if (d > distancia):
+            print(f"{atributo}: maior => {d}")
+            return False
+    return True
+
 class posicaoCorpo:
     def __init__(self, poseAtual, lmPose):
         self.ombro_esq =    poseAtual[lmPose.LEFT_SHOULDER]
@@ -109,8 +120,10 @@ class posicaoCorpo:
 class CameraApp(QWidget):
     def __init__(self):
         super().__init__()
+        
+        self.PoseObjetivo = None
         self.PosesParaImprimir = []
-        self.setWindowTitle("Detectação de Exercícios")
+        self.setWindowTitle("Detecção de Exercícios")
         self.setGeometry(100, 100, 900, 700)
 
         # Layout
@@ -146,6 +159,9 @@ class CameraApp(QWidget):
         self.cap = None
         self.timer = QTimer()
         self.timer.timeout.connect(self.update_frame)
+        
+        self.timerExercicio = QTimer()
+        self.timerExercicio.timeout.connect(self.checkExercicio)
 
         # MediaPipe
         self.mp_pose = mp.solutions.pose
@@ -154,9 +170,14 @@ class CameraApp(QWidget):
     def iniciar_camera(self):
         self.cap = cv2.VideoCapture(0)
         self.timer.start(30)
+        #checa os exercícios
+        self.timerExercicio.start(100)
 
     def parar_camera(self):
         self.timer.stop()
+        self.timerExercicio.stop()
+        
+        self.PoseObjetivo = None
         if self.cap is not None:
             self.cap.release()
         self.label_video.setPixmap(QPixmap())
@@ -174,11 +195,27 @@ class CameraApp(QWidget):
         if ok and nome_arquivo:
             pose_carregada = posicaoCorpo.carregar_de_arquivo(f"{nome_arquivo}.json")
             self.PosesParaImprimir.append(pose_carregada)
+            
+            #apagar pois é para teste
+            self.PoseObjetivo = pose_carregada
+            
             print(f"Pose carregada do arquivo {nome_arquivo}.json")
 
     def apagarPoses(self):
         self.PosesParaImprimir = []
-
+        self.PoseObjetivo = None
+    
+    def checkExercicio(self):
+        
+        
+        
+        
+        if self.PoseObjetivo is not None:
+            if ConferePoses(self.PoseObjetivo, self.PoseFinal, 0.5):
+                print("Pose igual")
+        else:
+            print("Sem Pose Objetivo")
+     
     def update_frame(self):
         
         ret, frame = self.cap.read()
@@ -203,7 +240,6 @@ class CameraApp(QWidget):
             
             for pose in self.PosesParaImprimir:
                 pose.imprime_Pose(cv2, frame, h, w, color = (0, 0, 255))
-                
             
         # Converter a imagem para exibir no QLabel
         img_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
