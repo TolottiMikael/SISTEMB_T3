@@ -1,0 +1,17 @@
+{
+    "ombro_esq": {"x": 0.3, "y": 0.3, "z": -0.1, "visibility": 0.99},
+    "ombro_dir": {"x": 0.7, "y": 0.3, "z": -0.1, "visibility": 0.99},
+    "quadril_esq": {"x": 0.4, "y": 0.6, "z": 0.0, "visibility": 0.99},
+    "quadril_dir": {"x": 0.6, "y": 0.6, "z": 0.0, "visibility": 0.99},
+    "joelho_esq": {"x": 0.35, "y": 0.9, "z": 0.05, "visibility": 0.95},
+    "joelho_dir": {"x": 0.65, "y": 0.9, "z": 0.05, "visibility": 0.95},
+    "tornoza_esq": {"x": 0.3, "y": 1.0, "z": 0.1, "visibility": 0.9},
+    "tornoza_dir": {"x": 0.7, "y": 1.0, "z": 0.1, "visibility": 0.9},
+    "cotovelo_esq": {"x": 0.2, "y": 0.15, "z": -0.15, "visibility": 0.98},
+    "cotovelo_dir": {"x": 0.8, "y": 0.15, "z": -0.15, "visibility": 0.98},
+    "pulso_esq": {"x": 0.15, "y": 0.05, "z": -0.2, "visibility": 0.95},
+    "pulso_dir": {"x": 0.85, "y": 0.05, "z": -0.2, "visibility": 0.95},
+    "ponta_pe_esq": {"x": 0.25, "y": 1.05, "z": 0.15, "visibility": 0.9},
+    "ponta_pe_dir": {"x": 0.75, "y": 1.05, "z": 0.15, "visibility": 0.9},
+    "cabeca": {"x": 0.5, "y": 0.15, "z": -0.1, "visibility": 0.99}
+}
