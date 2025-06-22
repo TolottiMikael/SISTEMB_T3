@@ -159,18 +159,18 @@ while captura.isOpened():
         #anota na imagem o angulo dessa linha:
         anguloOmbroAoCotovelo = calculo_angulo(ombro_esq_x, ombro_esq_y, cotov_esq_x, cotov_esq_y)
         anguloCotoveloAoPulso = calculo_angulo(cotov_esq_x, cotov_esq_y, pulso_esq_x, pulso_esq_y)
-        anguloJoelhoAoTornoza = calculo_angulo(joelho_esq_x, joelho_esq_y, tornoza_esq_x, tornoza_esq_y)
-        if (inicioMovimento == False) and (anguloOmbroAoCotovelo < 50) and (anguloCotoveloAoPulso < 50) and (anguloJoelhoAoTornoza < 161):
+        anguloOmbroAoQuadril = calculo_angulo(ombro_esq_x, ombro_esq_y, quadril_esq_x, quadril_esq_y)
+        if (inicioMovimento == False) and (anguloOmbroAoCotovelo < 95) and (anguloCotoveloAoPulso < 160) and (anguloOmbroAoQuadril < 93):
             inicioMovimento = True
             fimMovimento = False
-        if (inicioMovimento == True) and (anguloOmbroAoCotovelo > 165) and (anguloCotoveloAoPulso > 165) and (anguloJoelhoAoTornoza > 169):
+        if (inicioMovimento == True) and (anguloOmbroAoCotovelo > 170) and (anguloCotoveloAoPulso > 170) and (anguloOmbroAoQuadril > 100):
             inicioMovimento = False
             fimMovimento = True
             repeticoes += 1
 
         cv2.putText(imagem, str(anguloOmbroAoCotovelo), (10, 90), fonte, 0.9, green, 2)
         cv2.putText(imagem, str(anguloCotoveloAoPulso), (10, 120), fonte, 0.9, green, 2)
-        cv2.putText(imagem, str(anguloJoelhoAoTornoza), (10, 150), fonte, 0.9, green, 2)
+        cv2.putText(imagem, str(anguloOmbroAoQuadril), (10, 150), fonte, 0.9, green, 2)
         cv2.putText(imagem, str(repeticoes), (10, 180), fonte, 0.9, green, 2)
 
 
