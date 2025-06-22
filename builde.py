@@ -157,17 +157,16 @@ while captura.isOpened():
 
 
         #anota na imagem o angulo dessa linha:
-        anguloOmbroDirAoQuadrilDir = calculo_angulo(ombro_dir_x, ombro_dir_y, quadril_dir_x, quadril_dir_y)
-        if (inicioMovimento == False) and (anguloOmbroDirAoQuadrilDir < 90):
+        anguloOmbroAoCotovelo = calculo_angulo(ombro_esq_x, ombro_esq_y, cotov_esq_x, cotov_esq_y)
+        if (inicioMovimento == False) and (anguloOmbroAoCotovelo < 140):
             inicioMovimento = True
             fimMovimento = False
-        if (inicioMovimento == True) and (anguloOmbroDirAoQuadrilDir > 110):
+        if (inicioMovimento == True) and (anguloOmbroAoCotovelo > 165):
             inicioMovimento = False
             fimMovimento = True
             repeticoes += 1
 
-
-        cv2.putText(imagem, str(anguloOmbroDirAoQuadrilDir), (10, 90), fonte, 0.9, green, 2)
+        cv2.putText(imagem, str(anguloOmbroAoCotovelo), (10, 90), fonte, 0.9, green, 2)
         cv2.putText(imagem, str(repeticoes), (10, 120), fonte, 0.9, green, 2)
 
 
