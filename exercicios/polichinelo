@@ -3,13 +3,12 @@
         {
             "indice": 0,
             "proxIndice": 1,
-            "nome": "bracforte"
+            "nome": "sentido"
         },
         {
             "indice": 1,
-            "nome": "sentado",
-            "proxIndice": 0
+            "proxIndice": 0,
+            "nome": "polichineloAberto"
         }
     ]
 }
-
