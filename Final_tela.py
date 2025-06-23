@@ -123,6 +123,9 @@ class CameraApp(QWidget):
         
         self.PoseObjetivo = None
         self.PosesParaImprimir = []
+        self.ContagemExercicios = 0
+        
+        
         self.setWindowTitle("Detecção de Exercícios")
         self.setGeometry(100, 100, 900, 700)
 
@@ -209,6 +212,7 @@ class CameraApp(QWidget):
         self.PosesParaImprimir = []
         self.PoseObjetivo = None
         self.ExercicioCarregado = None
+        self.ContagemExercicios = 0
     
     def carregar_exercicios(self):
         self.PosesParaImprimir = []
@@ -266,7 +270,10 @@ class CameraApp(QWidget):
             
             for pose in self.PosesParaImprimir:
                 pose.imprime_Pose(cv2, frame, h, w, color = (0, 0, 255))
-            
+
+            if self.ContagemExercicios is not None:
+                cv2.putText(frame, f"Contagem de exercicios: {self.ContagemExercicios}", (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2)
+
         # Converter a imagem para exibir no QLabel
         img_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
         h, w, ch = img_rgb.shape
