@@ -1,0 +1,14 @@
+{
+    "exercicios": [
+        {
+            "indice": 0,
+            "proxIndice": 1,
+            "nome": "tricepsBancoEmCima"
+        },
+        {
+            "indice": 1,
+            "proxIndice": 0,
+            "nome": "tricepsBancoEmBaixo"
+        }
+    ]
+}
