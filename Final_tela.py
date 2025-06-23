@@ -124,6 +124,7 @@ class CameraApp(QWidget):
         self.PoseObjetivo = None
         self.PosesParaImprimir = []
         self.ContagemExercicios = 0
+        self.contaUmaVez = False
         
         
         self.setWindowTitle("Detecção de Exercícios")
@@ -240,12 +241,17 @@ class CameraApp(QWidget):
                     self.PosesParaImprimir = [self.PoseObjetivo]
                     #print(f"Pose objetivo: {exerci['nome']}")
                     if self.PoseObjetivo is not None and hasattr(self, 'PoseFinal'):
-                        if ConferePoses(self.PoseObjetivo, self.PoseFinal, 0.3):
+                        if ConferePoses(self.PoseObjetivo, self.PoseFinal, 0.1):
                             print(f"Pose {exerci['nome']} correta. Indo para próximo exercício...")
                             self.etapa_exercicio = exerci.get('proxIndice', self.etapa_exercicio)  # Avança
                             if self.etapa_exercicio == 0:
-                                self.ContagemExercicios += 1
-                                print(f"Exercício concluido! Contagem de exercícios: {self.ContagemExercicios}")
+                                if self.contaUmaVez == False:
+                                    self.ContagemExercicios += 1
+                                    self.contaUmaVez = True
+                                    print(f"Exercício concluido! Contagem de exercícios: {self.ContagemExercicios}")
+                            else:
+                                self.contaUmaVez = False
+                                print(f"Proximos exercícios: {self.etapa_exercicio}")
                     else:
                         print("Pose não detectada ou sem pose final.")
                 

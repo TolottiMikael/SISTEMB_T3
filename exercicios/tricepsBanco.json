@@ -3,12 +3,12 @@
         {
             "indice": 0,
             "proxIndice": 1,
-            "nome": "tricepsBancoEmCima"
+            "nome": "tricepBancoEmCima"
         },
         {
             "indice": 1,
             "proxIndice": 0,
-            "nome": "tricepsBancoEmBaixo"
+            "nome": "tricepBancoEmBaixo"
         }
     ]
 }
