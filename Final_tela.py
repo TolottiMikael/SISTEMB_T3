@@ -19,7 +19,7 @@ def ConferePoses(RefPose, PoseAtual, distancia):
                                  PoseAtual.__dict__[atributo].x, PoseAtual.__dict__[atributo].y)
         
         if (d > distancia):
-            print(f"{atributo}: maior => {d}")
+            #print(f"{atributo}: maior => {d}")
             return False
     return True
 
@@ -153,6 +153,10 @@ class CameraApp(QWidget):
         self.botao_limpaPoses.clicked.connect(self.apagarPoses)
         layout.addWidget(self.botao_limpaPoses)
         
+        self.botao_carregar_exerc = QPushButton("Carregar Exercícios")
+        self.botao_carregar_exerc.clicked.connect(self.carregar_exercicios)
+        layout.addWidget(self.botao_carregar_exerc)
+        
         self.setLayout(layout)
 
         # Configurações da câmera
@@ -204,18 +208,40 @@ class CameraApp(QWidget):
     def apagarPoses(self):
         self.PosesParaImprimir = []
         self.PoseObjetivo = None
+        self.ExercicioCarregado = None
+    
+    def carregar_exercicios(self):
+        self.PosesParaImprimir = []
+        self.ContagemExercicios = 0
+        arquivoExerc, ok = QInputDialog.getText(self, "Carregar Exercícios", "Digite o nome do arquivo:")
+        
+        if ok and arquivoExerc:
+            with open(f"exercicios/{arquivoExerc}.json", 'r') as arquivo:
+                dados = json.load(arquivo)
+                self.ExercicioCarregado = dados['exercicios']
+                self.etapa_exercicio = 0  # Começa no primeiro
+                print("Exercício carregado com sucesso!")
     
     def checkExercicio(self):
+        if not hasattr(self, 'ExercicioCarregado'):
+            return
         
-        
-        
-        
-        if self.PoseObjetivo is not None:
-            if ConferePoses(self.PoseObjetivo, self.PoseFinal, 0.5):
-                print("Pose igual")
-        else:
-            print("Sem Pose Objetivo")
-     
+        if self.ExercicioCarregado is not None:
+            for exerci in self.ExercicioCarregado:
+                if exerci['indice'] == self.etapa_exercicio:
+                    self.PoseObjetivo = posicaoCorpo.carregar_de_arquivo(f"{exerci['nome']}.json")
+                    self.PosesParaImprimir = [self.PoseObjetivo]
+                    #print(f"Pose objetivo: {exerci['nome']}")
+                    if self.PoseObjetivo is not None and hasattr(self, 'PoseFinal'):
+                        if ConferePoses(self.PoseObjetivo, self.PoseFinal, 0.3):
+                            print(f"Pose {exerci['nome']} correta. Indo para próximo exercício...")
+                            self.etapa_exercicio = exerci.get('proxIndice', self.etapa_exercicio)  # Avança
+                            if self.etapa_exercicio == 0:
+                                self.ContagemExercicios += 1
+                                print(f"Exercício concluido! Contagem de exercícios: {self.ContagemExercicios}")
+                    else:
+                        print("Pose não detectada ou sem pose final.")
+                
     def update_frame(self):
         
         ret, frame = self.cap.read()

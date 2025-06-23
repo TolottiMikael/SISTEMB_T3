@@ -1,0 +1,20 @@
+{
+    "exercicios": [
+        {
+            "indice": 0,
+            "proxIndice": 1,
+            "nome": "bracforte"
+        },
+        {
+            "indice": 1,
+            "nome": "sentado",
+            "proxIndice": 2
+        },
+        {
+            "indice": 2,
+            "nome": "polichineloAberto",
+            "proxIndice": 0
+        }
+    ]
+}
+
