@@ -4,7 +4,7 @@ import math
 import cv2
 import numpy as np
 import mediapipe as mp
-from PyQt5.QtWidgets import QApplication, QLabel, QPushButton, QVBoxLayout, QWidget,QInputDialog
+from PyQt5.QtWidgets import QApplication, QLabel, QPushButton, QVBoxLayout, QHBoxLayout, QWidget,QInputDialog
 from PyQt5.QtGui import QImage, QPixmap
 from PyQt5.QtCore import QTimer
 
@@ -130,10 +130,12 @@ class CameraApp(QWidget):
         self.setGeometry(100, 100, 900, 700)
 
         # Layout
+        
+        columns = QHBoxLayout()
         layout = QVBoxLayout()
 
         self.label_video = QLabel("Câmera não iniciada")
-        layout.addWidget(self.label_video)
+        columns.addWidget(self.label_video)
 
         self.botao_iniciar = QPushButton("Iniciar Câmera")
         self.botao_iniciar.clicked.connect(self.iniciar_camera)
@@ -152,7 +154,7 @@ class CameraApp(QWidget):
         self.botao_carregar_Pose.clicked.connect(self.carregar_Pose)
         layout.addWidget(self.botao_carregar_Pose)
 
-        self.botao_limpaPoses = QPushButton("Apagar Poses Salvas")
+        self.botao_limpaPoses = QPushButton("Clear nice!")
         self.botao_limpaPoses.clicked.connect(self.apagarPoses)
         layout.addWidget(self.botao_limpaPoses)
         
@@ -160,7 +162,8 @@ class CameraApp(QWidget):
         self.botao_carregar_exerc.clicked.connect(self.carregar_exercicios)
         layout.addWidget(self.botao_carregar_exerc)
         
-        self.setLayout(layout)
+        columns.addLayout(layout)
+        self.setLayout(columns)
 
         # Configurações da câmera
         self.cap = None
